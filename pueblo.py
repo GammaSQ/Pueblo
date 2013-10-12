@@ -11,18 +11,16 @@ import markdown
 
 class Article(object):
     def __init__(self, file):
-        md = markdown.Markdown()
+        self.html_filename = os.path.basename(file).rsplit('.', 1)[0]
+        md = markdown.Markdown(extensions=['meta'])
         with open(file) as f:
-            self.lines = f.readlines()
-        fulltext = ''.join(self.lines)
-        self.text = ''.join(self.lines[4:])
-        self.html_filename = os.path.basename(file).replace('.txt', '.html')
-        self.title = cgi.escape(
-            re.search('Title: (.*)\n', fulltext).group(1).strip())
-        self.date_txt = re.search('Date: (.*)\n', fulltext).group(1).strip()
-        self.author = re.search('Author: (.*)\n', fulltext).group(1).strip()
+            self.html = md.convert(f.read())
+            print self.html
+        self.meta = md.Meta
+        self.title = cgi.escape(self.meta['title'][0])
+        self.date_txt = self.meta['date'][0]
+        self.author = self.meta['author'][0]
         self.datetime = datetime.datetime.strptime(self.date_txt, '%d %B %Y')
-        self.html = md.convert(self.text).encode('utf-8')
         self.summary = re.sub(
             '<[^<]+?>', '', self.html)[0:200].replace('\n', ' ')
         date = time.strptime(self.date_txt, '%d %B %Y')
@@ -30,45 +28,48 @@ class Article(object):
 
 
 class Site(object):
-    def get_files(self, dir, ignore_list):
-        textfiles = glob.glob(os.path.join(dir, '*.txt'))
-        for ignored_file in ignore_list:
-            textfiles.remove(dir+ignored_file)
-        return textfiles
 
-    def load_articles(self, dir, ignore_list):
+    def __init__(self, params):
+        self.template_dir = params['TEMPLATE_DIR']
+        self.src_dir = params['SOURCE']
+        self.dest_dir = params['PUBLISH_TO']
+        self.ignore_files = params['IGNORE_FILES']
+        self.pagebuild_delta = params['PAGEBUILD_DELTA']
+        # Use the full loader so we get an informative traceback from jinja
+        # which includes the filename and line of the template.
+        self.templates = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(self.template_dir))
+
+    def get_files(self):
+        """Get filenames of articles excluding the ignored ones."""
+        textfiles = set(glob.glob(os.path.join(self.src_dir, '*.markdown')))
+        ignore_files = set(os.path.join(self.src_dir, ignore)
+                           for ignore in self.ignore_files)
+        return textfiles - ignore_files
+
+    def load_articles(self):
         articles = []
-        for file in self.get_files(dir, ignore_list):
-            article = Article(file)
-            if article.datetime < datetime.datetime.now():
-                articles.append(article)
+        for file in self.get_files():
+            articles.append(Article(file))
         articles.sort(key=lambda k: k.datetime, reverse=True)
         return articles
 
-    def build_from_template(self, data, template, output_file, dir):
-        with open(template) as f:
-            template = jinja2.Template(f.read())
-        with open(os.path.join(dir, output_file), 'w') as i:
+    def build_from_template(self, data, template, output_file):
+        template = self.templates.get_template(template)
+        with open(os.path.join(self.dest_dir, output_file), 'w') as i:
             i.write(template.render(data=data))
 
-    def build_site(self, params):
-        article_template = os.path.join(
-            params['TEMPLATE_DIR'], 'article_template.html')
-        site = Site()
-        articles = site.load_articles(params['DIR'], params['IGNORE_LIST'])
+    def build_site(self):
+        articles = self.load_articles()
+
         for article in articles:
             output = article.html_filename
-            if article.datetime > datetime.datetime.now() - datetime.timedelta(
-                    days=params['PAGEBUILD_DELTA']):
-                site.build_from_template(
-                    article, article_template, output, params['DIR'])
+            self.build_from_template(article, 'article_template.html', output)
 
         pages_to_build = (
-            (os.path.join(params['TEMPLATE_DIR'], 'index_template.html'),
-                'index.html'),
-            (os.path.join(params['TEMPLATE_DIR'], 'archive_template.html'),
-                'archive.html'),
-            (os.path.join(params['TEMPLATE_DIR'], 'rss_template.xml'),
-                'index.xml'))
-        for page in pages_to_build:
-            site.build_from_template(articles, page[0], page[1], params['DIR'])
+            ('index_template.html', 'index.html'),
+            ('archive_template.html', 'archive.html'),
+            ('rss_template.xml', 'index.xml'))
+
+        for template, output in pages_to_build:
+            self.build_from_template(articles, template, output)
