@@ -2,16 +2,21 @@
 
 import pueblo
 
-PARAMS = {
-    'SOURCE': './articles',
-    'PUBLISH_TO': './site',
-    'TEMPLATE_DIR': './templates',
-    'IGNORE_FILES': ['ignore_example.markdown'],
+params = {
+    'source': './articles',
+    'publish_to': './site',
+    'template_dir': './templates',
+    'ignore_files': ['ignore_example.markdown'],
+    'site': {
+        'title': 'Your site description',
+        'url': 'http://yoursite.com',
+        'blog_url': 'http://yoursite.com/blog/',
+    },
 }
 
 print "Content-type: text/html\n\n"
 
-site = pueblo.Site(PARAMS)
+site = pueblo.Site(params)
 site.build_site()
 
 print """<html>

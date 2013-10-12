@@ -29,12 +29,13 @@ class Article(object):
 
 class Site(object):
 
-    def __init__(self, params):
-        self.template_dir = params['TEMPLATE_DIR']
-        self.src_dir = params['SOURCE']
-        self.dest_dir = params['PUBLISH_TO']
-        self.ignore_files = params['IGNORE_FILES']
-        self.pagebuild_delta = params['PAGEBUILD_DELTA']
+    def __init__(self, config):
+        self.dest_dir = config['publish_to']
+        self.ignore_files = config['ignore_files']
+        self.pagebuild_delta = config['pagebuild_delta']
+        self.site = config['site']
+        self.src_dir = config['source']
+        self.template_dir = config['template_dir']
         # Use the full loader so we get an informative traceback from jinja
         # which includes the filename and line of the template.
         self.templates = jinja2.Environment(
@@ -57,7 +58,7 @@ class Site(object):
     def build_from_template(self, data, template, output_file):
         template = self.templates.get_template(template)
         with open(os.path.join(self.dest_dir, output_file), 'w') as i:
-            i.write(template.render(data=data))
+            i.write(template.render(data=data, site=self.site))
 
     def build_site(self):
         articles = self.load_articles()
