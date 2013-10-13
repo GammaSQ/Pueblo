@@ -16,7 +16,6 @@ class Article(object):
         md = markdown.Markdown(extensions=['meta'])
         with open(file) as f:
             self.html = md.convert(f.read())
-            print self.html
         self.meta = md.Meta
         self.title = cgi.escape(self.meta['title'][0])
         self.date_txt = self.meta['date'][0]
@@ -49,6 +48,7 @@ class Site(object):
         return textfiles - ignore_files
 
     def load_articles(self):
+        """Get Article objects from the markdown files on disk"""
         articles = []
         for file in self.get_files():
             articles.append(Article(file))
@@ -64,14 +64,11 @@ class Site(object):
         articles = self.load_articles()
 
         for article in articles:
-            self.build_from_template('article_template.html',
+            self.build_from_template('article.html',
                                      article.html_filename,
                                      article=article)
 
-        pages_to_build = (
-            ('index_template.html', 'index.html'),
-            ('archive_template.html', 'archive.html'),
-            ('rss_template.xml', 'index.xml'))
+        pages_to_build = ('index.html', 'archive.html', 'rss.xml')
 
-        for template, output in pages_to_build:
-            self.build_from_template(template, output, articles=articles)
+        for template in pages_to_build:
+            self.build_from_template(template, template, articles=articles)

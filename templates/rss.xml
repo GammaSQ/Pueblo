@@ -7,14 +7,14 @@ xmlns:dc="http://purl.org/dc/elements/1.1/"
 	<channel>
 		<title>{{ site.title }}</title>
 		<link>{{ site.url }}</link>
-		<description>Your site description</description>
+		<description>{{ site.description }}</description>
 		<language>en</language>
-		<atom:link href="http://yoursite.com/index.xml" rel="self" type="application/rss+xml" />
+		<atom:link href="{{ site.blog_url }}/rss.xml" rel="self" type="application/rss+xml" />
 		{% for article in articles[:25] %}
 		<item>
 			<title>{{ article.title }}</title>
-			<link>http://yoursite.com/{{ article.html_filename }}</link>
-			<guid>http://yoursite.com/{{ article.html_filename }}</guid>
+			<link>{{ site.blog_url }}/{{ article.html_filename }}</link>
+			<guid>{{ site.blog_url }}/{{ article.html_filename }}</guid>
 			<pubDate>{{ article.date_rss }}</pubDate>
 			<description>{{ article.summary }}</description>
 			<content:encoded><![CDATA[{{ article.html }}]]></content:encoded>

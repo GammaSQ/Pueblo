@@ -11,7 +11,7 @@ params = {
         'name': 'Site Name',
         'description': 'Your site description',
         'url': 'http://example.com',
-        'blog_url': 'http:/example.com/blog/',
+        'blog_url': 'http://example.com/blog',
         'author': 'Your name here',
     },
 }
