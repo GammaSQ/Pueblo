@@ -1,27 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-	<title>yoursite.com</title>
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<meta name="viewport" content="user-scalable=yes, width=device-width" />
-	<link href="./index.xml" rel="alternate" type="application/rss+xml" />
-</head>
-<body>
-	<h1>yoursite.com</h1>
-	<p class="site_description">your description</p>
+{% extends "base.html" %}
+
+{# Fron page needs no link to the front page #}
+{% block frontpagelink %}{% endblock %}
+{% block content %}
+	<h1>{{ site.name }}</h1>
+	<p class="site_description">{{ site.description }}</p>
 	<ul class="navbar">
 		<li class="navitem"><a href="your_about_page.html">about</a></li>
-		<li class="navitem"><a href="./archive.html">archive</a></li>
+		<li class="navitem"><a href="archive.html">archive</a></li>
 	</ul>
 	<div class="article_list">
-		{% for article in data[:30] %}
+		{% for article in articles[:30] %}
 			<h2><a href="{{ article.html_filename }}">{{ article.title }}</a></h2>
 			<p>{{ article.date_txt }}: {{ article.summary }} <a href="{{ article.html_filename }}">...</a></p>
 		{% endfor %}
 	</div>
 	<h2><a href="archive.html">View All Articles</a></h2>
-</body>
-</html>
+{% endblock %}
 {# vi: ft=htmljinja
 #}

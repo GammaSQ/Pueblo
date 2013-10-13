@@ -8,9 +8,11 @@ params = {
     'template_dir': './templates',
     'ignore_files': ['ignore_example.markdown'],
     'site': {
-        'title': 'Your site description',
-        'url': 'http://yoursite.com',
-        'blog_url': 'http://yoursite.com/blog/',
+        'name': 'Site Name',
+        'description': 'Your site description',
+        'url': 'http://example.com',
+        'blog_url': 'http:/example.com/blog/',
+        'author': 'Your name here',
     },
 }
 

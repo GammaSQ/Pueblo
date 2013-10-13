@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<title>article archive</title>
-<link rel="stylesheet" type="text/css" href="style.css">
-<meta name="viewport" content="user-scalable=yes, width=device-width" />
-<link href="./index.xml" rel="alternate" type="application/rss+xml" />
-<p class="return_link"><a href="index.html">yoursite.com</a></p>
-<h1>Article Archive</h1>
-{% for article in data %}
-<h2><a href="{{ article.html_filename }}">{{ article.title }}</a></h2>
-<p>{{ article.date_txt }}: {{ article.summary }} <a href="{{ article.html_filename }}">...</a></p></p>
-{% endfor %}
+{% extends "base.html" %}
+{% block title %}Article archive{% endblock %}
+{% block content %}
+	<h1>Article Archive</h1>
+	{% for article in articles %}
+		<h2><a href="{{ article.html_filename }}">{{ article.title }}</a></h2>
+		<p>{{ article.date_txt }}: {{ article.summary }} <a href="{{ article.html_filename }}">...</a></p></p>
+	{% endfor %}
+{% endblock %}
+{# vi: ft=htmljinja
+#}

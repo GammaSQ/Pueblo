@@ -10,7 +10,7 @@ xmlns:dc="http://purl.org/dc/elements/1.1/"
 		<description>Your site description</description>
 		<language>en</language>
 		<atom:link href="http://yoursite.com/index.xml" rel="self" type="application/rss+xml" />
-		{% for article in data[:25] %}
+		{% for article in articles[:25] %}
 		<item>
 			<title>{{ article.title }}</title>
 			<link>http://yoursite.com/{{ article.html_filename }}</link>

@@ -11,7 +11,8 @@ import markdown
 
 class Article(object):
     def __init__(self, file):
-        self.html_filename = os.path.basename(file).rsplit('.', 1)[0]
+        self.html_filename = os.path.basename(file).replace(
+            '.markdown', '.html')
         md = markdown.Markdown(extensions=['meta'])
         with open(file) as f:
             self.html = md.convert(f.read())
@@ -32,7 +33,6 @@ class Site(object):
     def __init__(self, config):
         self.dest_dir = config['publish_to']
         self.ignore_files = config['ignore_files']
-        self.pagebuild_delta = config['pagebuild_delta']
         self.site = config['site']
         self.src_dir = config['source']
         self.template_dir = config['template_dir']
@@ -55,17 +55,18 @@ class Site(object):
         articles.sort(key=lambda k: k.datetime, reverse=True)
         return articles
 
-    def build_from_template(self, data, template, output_file):
+    def build_from_template(self, template, output_file, **template_args):
         template = self.templates.get_template(template)
         with open(os.path.join(self.dest_dir, output_file), 'w') as i:
-            i.write(template.render(data=data, site=self.site))
+            i.write(template.render(site=self.site, **template_args))
 
     def build_site(self):
         articles = self.load_articles()
 
         for article in articles:
-            output = article.html_filename
-            self.build_from_template(article, 'article_template.html', output)
+            self.build_from_template('article_template.html',
+                                     article.html_filename,
+                                     article=article)
 
         pages_to_build = (
             ('index_template.html', 'index.html'),
@@ -73,4 +74,4 @@ class Site(object):
             ('rss_template.xml', 'index.xml'))
 
         for template, output in pages_to_build:
-            self.build_from_template(articles, template, output)
+            self.build_from_template(template, output, articles=articles)
