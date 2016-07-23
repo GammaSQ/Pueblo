@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
 	<title>{% block title %}{{ site.name }}{% endblock %}</title>
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<link href="rss.xml" rel="alternate" type="application/rss+xml" />
-	<meta name="viewport" content="user-scalable=yes, width=device-width" />
+	{{ 'style.css' | static }}
+	<link href="atom.xml" rel="alternate" type="application/atom+xml">
+	<meta name="viewport" content="user-scalable=yes, width=device-width, initial-scale=1">
 </head>
 <body>
+	<header></header>
+	<nav>
+	{% for page in site.pages %}
+		{{ page.title | link_page(page) }}
+	{% endfor %}
+	</nav>
 	{% block frontpagelink %}
-		<p class="return_link"><a href="index.html">{{ site.url }}</a></p>
+		<p class="return_link"><a href="{{site.blog_url + 'index.html'}}">{{ site.url }}</a></p>
 	{% endblock %}
 	{% block content %}{% endblock %}
 </body>

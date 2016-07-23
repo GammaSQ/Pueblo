@@ -1,2 +1,5 @@
-markdown
-jinja2
+Jinja2==2.8
+Markdown==2.6.6
+MarkupSafe==0.23
+python-slugify==1.2.0
+Unidecode==0.4.19

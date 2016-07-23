@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 {% block title %}Article archive{% endblock %}
 {% block content %}
@@ -7,5 +8,4 @@
 		<p>{{ article.date_txt }}: {{ article.summary }} <a href="{{ article.html_filename }}">...</a></p></p>
 	{% endfor %}
 {% endblock %}
-{# vi: ft=htmljinja
-#}
+{# vi: ft=htmljinja #}

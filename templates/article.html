@@ -2,7 +2,7 @@
 {% block title %}{{ article.title }}{% endblock %}
 {% block content %}
 	<h1>{{ article.title }}</h1>
-	<p>by <a href="your_about_page.html">{{ site.author }}</a> on {{ article.date_txt }}</p>
+	<p>by <a href="your_about_page.html">{{ article.author }}</a> on {{ article.date_txt }}</p>
 	{{ article.html }}
 {% endblock %}
 {# vi: ft=htmljinja
